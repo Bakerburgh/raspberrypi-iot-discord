@@ -5,6 +5,8 @@ import iotpi
 import os
 import signal
 import context
+import asyncio
+import sys
 
 cli = cliargs.CliArgs()
 config = Config(cli.config_filename)
@@ -61,11 +63,21 @@ async def add(left : int, right : int):
     await bot.say(left + right)
 
 
-async def on_sigterm(signum, frame):
+async def _signout():
     if ctx.valid():
+        print("Sending farewell message...")
         ipaddr = iotpi.get_ipaddr()
-        await bot.send_message(ctx.channel, "Hello World! I'm hailing from " + ipaddr)
+        await bot.send_message(ctx.channel, "Goodbye")
+    print("Signing out...")
     await bot.close()
+    print('Signed out')
+
+
+def on_sigterm(signum, frame):
+    print('Received signal ' + signum)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(asyncio.ensure_future(_signout()))
+    sys.exit(0)
 
 
 # Set signal handlers
