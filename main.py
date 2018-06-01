@@ -61,7 +61,7 @@ async def add(left : int, right : int):
     await bot.say(left + right)
 
 
-async def do_signout():
+async def on_sigterm(signum, frame):
     if ctx.valid():
         ipaddr = iotpi.get_ipaddr()
         await bot.send_message(ctx.channel, "Hello World! I'm hailing from " + ipaddr)
@@ -69,6 +69,6 @@ async def do_signout():
 
 
 # Set signal handlers
-signal.signal(signal.SIGTERM, do_signout)
+signal.signal(signal.SIGTERM, on_sigterm)
 
 bot.run(config.discord_token)
